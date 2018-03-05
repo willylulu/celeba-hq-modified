@@ -605,11 +605,11 @@ def create_celeba_hq(h5_filename, celeba_dir, delta_dir, num_threads=4, num_task
 #     print 'Added %d images.' % len(fields['idx'])
     for x in fields['idx'][7382:]:
         aidx, aimg64, aimg128, aimg256, aimg512, aimg1024 = process_func(x)
-        aimg64.save('/share/data/celeba-hq/celeba-64/'+str(aidx)+'.jpg')
-        aimg128.save('/share/data/celeba-hq/celeba-128/'+str(aidx)+'.jpg')
-        aimg256.save('/share/data/celeba-hq/celeba-256/'+str(aidx)+'.jpg')
-        aimg512.save('/share/data/celeba-hq/celeba-512/'+str(aidx)+'.jpg')
-        aimg1024.save('/share/data/celeba-hq/celeba-1024/'+str(aidx)+'.jpg')
+        aimg64.save('./celeba-hq/celeba-64/'+str(aidx)+'.jpg')
+        aimg128.save('./celeba-hq/celeba-128/'+str(aidx)+'.jpg')
+        aimg256.save('./celeba-hq/celeba-256/'+str(aidx)+'.jpg')
+        aimg512.save('./celeba-hq/celeba-512/'+str(aidx)+'.jpg')
+        aimg1024.save('./celeba-hq/celeba-1024/'+str(aidx)+'.jpg')
         print(x)
 #----------------------------------------------------------------------------
 
