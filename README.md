@@ -30,8 +30,10 @@ mkdir celeba-1024
 
 5.	Back to home path
 `cd`
-6.	Create a directory A and [download celeb-hq zip file](https://drive.google.com/drive/folders/0B4qLcYyJmiz0TXY1NG02bzZVRGs) and put them in directory A
-7.	Creare a directory B and [download celebA **not align version**](https://drive.google.com/open?id=0B7EVK8r0v71peklHb0pGdDl6R28) and put them in directory B
+6.	Creare a directory B and [download celebA **not align version**](https://drive.google.com/open?id=0B7EVK8r0v71peklHb0pGdDl6R28) and put them in directory A
+
+7.	Create a directory A and [download celeb-hq zip file](https://drive.google.com/drive/folders/0B4qLcYyJmiz0TXY1NG02bzZVRGs) and put them in directory B
+
 8.	[Downloadd anno file](https://drive.google.com/open?id=0B7EVK8r0v71pOC0wOVZlQnFfaGs) and put them in directory B
 9.	Excute h5tool.py
 `python h5tool.py create_celeba_hq 123456.h5 <path to directory A> <path to directory B>`
