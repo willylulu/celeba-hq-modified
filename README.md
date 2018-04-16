@@ -1,4 +1,7 @@
 # celeba-hq-modified
+
+![imga](https://raw.githubusercontent.com/willylulu/celeba-hq-modified/master/0.jpg)
+
 A modified approach getting celeb-hq dataset
 
 Replace saving in h5 file system with directly storing in picture
