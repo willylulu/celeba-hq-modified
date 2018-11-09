@@ -591,18 +591,20 @@ def create_celeba_hq(h5_filename, celeba_dir, delta_dir, num_threads=4, num_task
         img64 = img.resize((64, 64), PIL.Image.ANTIALIAS)
         return idx, img64, img128, img256, img512, img
 
-#     print 'Creating %s' % h5_filename
-#     h5 = HDF5Exporter(h5_filename, 1024, 3)
-#     with ThreadPool(num_threads) as pool:
-#         print '%d / %d\r' % (0, len(fields['idx'])),
-#         for idx, img in pool.process_items_concurrently(fields['idx'], process_func=process_func, max_items_in_flight=num_tasks):
-#             h5.add_images(img[np.newaxis])
-#             print '%d / %d\r' % (idx + 1, len(fields['idx'])),
+    # print 'Creating %s' % h5_filename
+    # h5 = HDF5Exporter(h5_filename, 1024, 3)
+    # with ThreadPool(num_threads) as pool:
+    #     print '%d / %d\r' % (0, len(fields['idx'])),
+    #     for idx, img in pool.process_items_concurrently(fields['idx'], process_func=process_func, max_items_in_flight=num_tasks):
+    #         h5.add_images(img[np.newaxis])
+    #         print '%d / %d\r' % (idx + 1, len(fields['idx'])),
 
-#     print '%-40s\r' % 'Flushing data...',
-#     h5.close()
-#     print '%-40s\r' % '',
-#     print 'Added %d images.' % len(fields['idx'])
+    # print '%-40s\r' % 'Flushing data...',
+    # h5.close()
+    # print '%-40s\r' % '',
+    # print 'Added %d images.' % len(fields['idx'])
+    
+    # Save all generated images.
     for x in fields['idx'][7382:]:
         aidx, aimg64, aimg128, aimg256, aimg512, aimg1024 = process_func(x)
         aimg64.save('./celeba-hq/celeba-64/'+str(aidx)+'.jpg')
