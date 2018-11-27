@@ -605,7 +605,7 @@ def create_celeba_hq(h5_filename, celeba_dir, delta_dir, num_threads=4, num_task
     # print 'Added %d images.' % len(fields['idx'])
     
     # Save all generated images.
-    for x in fields['idx'][7382:]:
+    for x in fields['idx']:
         aidx, aimg64, aimg128, aimg256, aimg512, aimg1024 = process_func(x)
         aimg64.save('./celeba-hq/celeba-64/'+str(aidx)+'.jpg')
         aimg128.save('./celeba-hq/celeba-128/'+str(aidx)+'.jpg')
