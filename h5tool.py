@@ -589,7 +589,7 @@ def create_celeba_hq(h5_filename, celeba_dir, delta_dir, num_threads=4, num_task
         img256 = img.resize((256, 256), PIL.Image.ANTIALIAS)
         img128 = img.resize((128, 128), PIL.Image.ANTIALIAS)
         img64 = img.resize((64, 64), PIL.Image.ANTIALIAS)
-        return orig_file img64, img128, img256, img512, img
+        return orig_file, img64, img128, img256, img512, img
 
     # Save all generated images.
     with ThreadPool(num_threads) as pool:
