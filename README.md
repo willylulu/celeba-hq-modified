@@ -2,6 +2,10 @@
 
 ![imga](https://raw.githubusercontent.com/willylulu/celeba-hq-modified/master/0.jpg)
 
+Changes I made (compared to original repo, see fork origin):
+- Added multithreading support for substantial speedup.
+- Save images using original filename (instead of index).
+
 A modified approach to generate __CelebA-HQ Dataset__
 
 The CelebA-HQ is a dataset introduced in _Progressive Growing of GANs for Improved Quality_ ([progressive_growing_of_gans](https://github.com/tkarras/progressive_growing_of_gans)), containing 30,000 high quality images from CelebA.

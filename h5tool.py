@@ -66,7 +66,7 @@ class HDF5Exporter:
 
     def num_images(self):
         return self.h5_lods[0].shape[0] + self.buffer_sizes[0]
-        
+
     def flush_lod(self, lod):
         num = self.buffer_sizes[lod]
         if num > 0:
@@ -144,7 +144,7 @@ class ThreadPool(object):
 
         def task_func(prepared, idx):
             return process_func(prepared)
-           
+
         def retire_result():
             processed, (prepared, idx) = self.get_result(task_func)
             results[idx] = processed
@@ -152,7 +152,7 @@ class ThreadPool(object):
                 yield post_func(results[retire_idx[0]])
                 results[retire_idx[0]] = None
                 retire_idx[0] += 1
-    
+
         for idx, item in enumerate(item_iterator):
             prepared = pre_func(item)
             results.append(None)
@@ -168,7 +168,7 @@ def inspect(h5_filename):
     print '%-20s%s' % ('HDF5 filename', h5_filename)
     file_size = os.stat(h5_filename).st_size
     print '%-20s%.2f GB' % ('Total size', float(file_size) / np.exp2(30))
-    
+
     h5 = h5py.File(h5_filename, 'r')
     lods = sorted([value for key, value in h5.iteritems() if key.startswith('data')], key=lambda lod: -lod.shape[3])
     shapes = [lod.shape for lod in lods]
@@ -178,7 +178,7 @@ def inspect(h5_filename):
     print '%-20s%dx%d' % ('Resolution', shape[3], shape[2])
     print '%-20s%d' % ('Color channels', shape[1])
     print '%-20s%.2f KB' % ('Size per image', float(file_size) / shape[0] / np.exp2(10))
-    
+
     if len(lods) != int(np.log2(shape[3])) + 1:
         print 'Warning: The HDF5 file contains incorrect number of LODs'
     if any(s[0] != shape[0] for s in shapes):
@@ -195,7 +195,7 @@ def compare(first_h5, second_h5):
     lods_b = sorted([value for key, value in h5_b.iteritems() if key.startswith('data')], key=lambda lod: -lod.shape[3])
     shape_a = lods_a[0].shape
     shape_b = lods_b[0].shape
-    
+
     if shape_a[1] != shape_b[1]:
         print 'The datasets have different number of color channels: %d vs. %d' % (shape_a[1], shape_b[1])
     elif shape_a[3] != shape_b[3] or shape_a[2] != shape_b[2]:
@@ -215,7 +215,7 @@ def compare(first_h5, second_h5):
             print 'All %d images are identical.' % min_images
         else:
             print '%d images out of %d are different.' % (num_diffs, min_images)
-            
+
     h5_a.close()
     h5_b.close()
 
@@ -227,7 +227,7 @@ def display(h5_filename, start=None, stop=None, step=None):
     lods = sorted([value for key, value in h5.iteritems() if key.startswith('data')], key=lambda lod: -lod.shape[3])
     indices = range(lods[0].shape[0])
     indices = indices[start : stop : step]
-    
+
     import cv2 # pip install opencv-python
     window_name = 'h5tool'
     cv2.namedWindow(window_name)
@@ -242,7 +242,7 @@ def display(h5_filename, start=None, stop=None, step=None):
         c = cv2.waitKey()
         if c == 27:
             break
-            
+
     h5.close()
     print '%-40s\r' % '',
     print 'Done.'
@@ -257,7 +257,7 @@ def extract(h5_filename, output_dir, start=None, stop=None, step=None):
     indices = range(shape[0])[start : stop : step]
     if not os.path.isdir(output_dir):
         os.makedirs(output_dir)
-        
+
     for idx in indices:
         print '%d / %d\r' % (idx, shape[0]),
         img = lods[0][idx]
@@ -266,7 +266,7 @@ def extract(h5_filename, output_dir, start=None, stop=None, step=None):
         else:
             img = PIL.Image.fromarray(img.transpose(1, 2, 0), 'RGB')
         img.save(os.path.join(output_dir, 'img%08d.png' % idx))
-        
+
     h5.close()
     print '%-40s\r' % '',
     print 'Extracted %d images.' % len(indices)
@@ -280,7 +280,7 @@ def create_custom(h5_filename, image_dir):
     if len(image_filenames) == 0:
         print 'Error: No input images found in %s' % glob_pattern
         return
-        
+
     img = np.asarray(PIL.Image.open(image_filenames[0]))
     resolution = img.shape[0]
     channels = img.shape[2] if img.ndim == 3 else 1
@@ -292,7 +292,7 @@ def create_custom(h5_filename, image_dir):
         return
     if channels not in [1, 3]:
         print 'Error: Input images must be stored as RGB or grayscale'
-    
+
     h5 = HDF5Exporter(h5_filename, resolution, channels)
     for idx in xrange(len(image_filenames)):
         print '%d / %d\r' % (idx, len(image_filenames)),
@@ -323,14 +323,14 @@ def create_mnist(h5_filename, mnist_dir, export_labels=False):
     assert labels.shape == (60000,) and labels.dtype == np.uint8
     assert np.min(images) == 0 and np.max(images) == 255
     assert np.min(labels) == 0 and np.max(labels) == 9
-    
+
     print 'Creating %s' % h5_filename
     h5 = HDF5Exporter(h5_filename, 32, 1)
     h5.add_images(images)
     h5.close()
-    
+
     if export_labels:
-        npy_filename = os.path.splitext(h5_filename)[0] + '-labels.npy'        
+        npy_filename = os.path.splitext(h5_filename)[0] + '-labels.npy'
         print 'Creating %s' % npy_filename
         onehot = np.zeros((labels.size, np.max(labels) + 1), dtype=np.float32)
         onehot[np.arange(labels.size), labels] = 1.0
@@ -348,7 +348,7 @@ def create_mnist_rgb(h5_filename, mnist_dir, num_images=1000000, random_seed=123
     images = np.pad(images, [(0,0), (2,2), (2,2)], 'constant', constant_values=0)
     assert images.shape == (60000, 32, 32) and images.dtype == np.uint8
     assert np.min(images) == 0 and np.max(images) == 255
-    
+
     print 'Creating %s' % h5_filename
     h5 = HDF5Exporter(h5_filename, 32, 3)
     np.random.seed(random_seed)
@@ -375,7 +375,7 @@ def create_cifar10(h5_filename, cifar10_dir, export_labels=False):
         labels.append(np.uint8(data['labels']))
     images = np.concatenate(images)
     labels = np.concatenate(labels)
-    
+
     assert images.shape == (50000, 3, 32, 32) and images.dtype == np.uint8
     assert labels.shape == (50000,) and labels.dtype == np.uint8
     assert np.min(images) == 0 and np.max(images) == 255
@@ -385,9 +385,9 @@ def create_cifar10(h5_filename, cifar10_dir, export_labels=False):
     h5 = HDF5Exporter(h5_filename, 32, 3)
     h5.add_images(images)
     h5.close()
-    
+
     if export_labels:
-        npy_filename = os.path.splitext(h5_filename)[0] + '-labels.npy'        
+        npy_filename = os.path.splitext(h5_filename)[0] + '-labels.npy'
         print 'Creating %s' % npy_filename
         onehot = np.zeros((labels.size, np.max(labels) + 1), dtype=np.float32)
         onehot[np.arange(labels.size), labels] = 1.0
@@ -404,7 +404,7 @@ def create_lsun(h5_filename, lmdb_dir, resolution=256, max_images=None):
         total_images = txn.stat()['entries']
         if max_images is None:
             max_images = total_images
-            
+
         h5 = HDF5Exporter(h5_filename, resolution, 3)
         for idx, (key, value) in enumerate(txn.cursor()):
             print '%d / %d\r' % (h5.num_images(), min(h5.num_images() + total_images - idx, max_images)),
@@ -435,7 +435,7 @@ def create_lsun(h5_filename, lmdb_dir, resolution=256, max_images=None):
     h5.close()
     print '%-40s\r' % '',
     print 'Added %d images.' % num_added
-        
+
 #----------------------------------------------------------------------------
 
 def create_celeba(h5_filename, celeba_dir, cx=89, cy=121):
@@ -446,7 +446,7 @@ def create_celeba(h5_filename, celeba_dir, cx=89, cy=121):
     if len(image_filenames) != num_images:
         print 'Error: Expected to find %d images in %s' % (num_images, glob_pattern)
         return
-    
+
     h5 = HDF5Exporter(h5_filename, 128, 3)
     for idx in xrange(num_images):
         print '%d / %d\r' % (idx, num_images),
@@ -479,7 +479,7 @@ def create_celeba_hq(h5_filename, celeba_dir, delta_dir, num_threads=4, num_task
             landmarks[i] = a
         landmarks = np.array(landmarks)
         print(landmarks.shape)
-    
+
     print 'Loading CelebA-HQ deltas from %s' % delta_dir
     import hashlib
     import bz2
@@ -500,7 +500,7 @@ def create_celeba_hq(h5_filename, celeba_dir, delta_dir, num_threads=4, num_task
         for idx, field in enumerate(lines[0]):
             type = int if field.endswith('idx') else str
             fields[field] = [type(line[idx]) for line in lines[1:]]
-    
+
     def rot90(v):
         return np.array([-v[1], v[0]])
 
@@ -562,25 +562,25 @@ def create_celeba_hq(h5_filename, celeba_dir, delta_dir, num_threads=4, num_task
             img += (np.median(img, axis=(0,1)) - img) * np.clip(mask, 0.0, 1.0)
             img = PIL.Image.fromarray(np.uint8(np.clip(np.round(img), 0, 255)), 'RGB')
             quad += pad[0:2]
-            
+
         # Transform.
         img = img.transform((4096, 4096), PIL.Image.QUAD, (quad + 0.5).flatten(), PIL.Image.BILINEAR)
         img = img.resize((1024, 1024), PIL.Image.ANTIALIAS)
         img = np.asarray(img).transpose(2, 0, 1)
-        
+
         # Load delta image and original JPG.
         with zipfile.ZipFile(os.path.join(delta_dir, 'deltas%05d.zip' % (idx - idx % 1000)), 'r') as zip:
             delta_bytes = zip.read('delta%05d.dat' % idx)
         with open(orig_path, 'rb') as file:
             orig_bytes = file.read()
-        
+
         # Decrypt delta image, using original JPG data as decryption key.
         algorithm = cryptography.hazmat.primitives.hashes.SHA256()
         backend = cryptography.hazmat.backends.default_backend()
         kdf = cryptography.hazmat.primitives.kdf.pbkdf2.PBKDF2HMAC(algorithm=algorithm, length=32, salt=orig_file, iterations=100000, backend=backend)
         key = base64.urlsafe_b64encode(kdf.derive(orig_bytes))
         delta = np.frombuffer(bz2.decompress(cryptography.fernet.Fernet(key).decrypt(delta_bytes)), dtype=np.uint8).reshape(3, 1024, 1024)
-        
+
         # Apply delta image.
         img = img + delta
         img = np.asarray(img).transpose(1, 2, 0)
@@ -589,30 +589,17 @@ def create_celeba_hq(h5_filename, celeba_dir, delta_dir, num_threads=4, num_task
         img256 = img.resize((256, 256), PIL.Image.ANTIALIAS)
         img128 = img.resize((128, 128), PIL.Image.ANTIALIAS)
         img64 = img.resize((64, 64), PIL.Image.ANTIALIAS)
-        return idx, img64, img128, img256, img512, img
+        return orig_file, img64, img128, img256, img512, img
 
-    # print 'Creating %s' % h5_filename
-    # h5 = HDF5Exporter(h5_filename, 1024, 3)
-    # with ThreadPool(num_threads) as pool:
-    #     print '%d / %d\r' % (0, len(fields['idx'])),
-    #     for idx, img in pool.process_items_concurrently(fields['idx'], process_func=process_func, max_items_in_flight=num_tasks):
-    #         h5.add_images(img[np.newaxis])
-    #         print '%d / %d\r' % (idx + 1, len(fields['idx'])),
-
-    # print '%-40s\r' % 'Flushing data...',
-    # h5.close()
-    # print '%-40s\r' % '',
-    # print 'Added %d images.' % len(fields['idx'])
-    
     # Save all generated images.
-    for x in fields['idx']:
-        aidx, aimg64, aimg128, aimg256, aimg512, aimg1024 = process_func(x)
-        aimg64.save('./celeba-hq/celeba-64/'+str(aidx)+'.jpg')
-        aimg128.save('./celeba-hq/celeba-128/'+str(aidx)+'.jpg')
-        aimg256.save('./celeba-hq/celeba-256/'+str(aidx)+'.jpg')
-        aimg512.save('./celeba-hq/celeba-512/'+str(aidx)+'.jpg')
-        aimg1024.save('./celeba-hq/celeba-1024/'+str(aidx)+'.jpg')
-        print(x)
+    with ThreadPool(num_threads) as pool:
+        for orig_fn, aimg64, aimg128, aimg256, aimg512, aimg1024 in pool.process_items_concurrently(fields['idx'], process_func=process_func, max_items_in_flight=num_tasks):
+            aimg64.save('./celeba-hq/celeba-64/'+str(orig_fn))
+            aimg128.save('./celeba-hq/celeba-128/'+str(orig_fn))
+            aimg256.save('./celeba-hq/celeba-256/'+str(orig_fn))
+            aimg512.save('./celeba-hq/celeba-512/'+str(orig_fn))
+            aimg1024.save('./celeba-hq/celeba-1024/'+str(orig_fn))
+            print(orig_fn)
 #----------------------------------------------------------------------------
 
 def execute_cmdline(argv):
@@ -621,7 +608,7 @@ def execute_cmdline(argv):
         prog        = prog,
         description = 'Tool for creating, extracting, and visualizing HDF5 datasets.',
         epilog      = 'Type "%s <command> -h" for more information.' % prog)
-        
+
     subparsers = parser.add_subparsers(dest='command')
     def add_command(cmd, desc, example=None):
         epilog = 'Example: %s %s' % (prog, example) if example is not None else None
@@ -642,7 +629,7 @@ def execute_cmdline(argv):
     p.add_argument(     '--start',          help='Start index (inclusive)', type=int, default=None)
     p.add_argument(     '--stop',           help='Stop index (exclusive)', type=int, default=None)
     p.add_argument(     '--step',           help='Step between consecutive indices', type=int, default=None)
-  
+
     p = add_command(    'extract',          'Extract images from HDF5 dataset.',
                                             'extract mnist-32x32.h5 cifar10-images')
     p.add_argument(     'h5_filename',      help='HDF5 file to extract')
